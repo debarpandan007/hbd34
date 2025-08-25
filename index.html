@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make A Wish!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /*
+        * Custom CSS for the animated background and candle effects.
+        * Tailwind CSS handles the rest of the styling.
+        */
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        :root {
+            --light-yellow: #fdf5e6;
+            --orange: #ffb86c;
+            --pink: #ff8a8a;
+            --purple: #8a2be2;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Animated Background */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, var(--orange), var(--pink), var(--purple), var(--light-yellow));
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+        }
+
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Confetti animation */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .confetti {
+            position: absolute;
+            transform: translateY(0) rotate(0);
+            opacity: 0;
+            animation: confetti-fall 5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+        }
+        .confetti.square {
+            width: 10px;
+            height: 10px;
+            background-color: transparent;
+        }
+        .confetti.ribbon {
+            width: 20px;
+            height: 5px;
+            background-color: transparent;
+        }
+        .confetti.star {
+            font-size: 10px;
+            color: transparent;
+        }
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Floating Candles */
+        .candle-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20rem; /* Increased separation */
+            
+        }
+
+        .candle {
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+            animation: float 8s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .candle:hover {
+            transform: scale(1.1);
+        }
+        
+        .candle-image {
+            width: 75px;
+            height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .wicker {
+            position: absolute;
+            top: -15px; /* Position the wicker above the candle */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 15px;
+            background-color: #5d3515;
+            z-index: 1;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .flame {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 75px;
+            background: radial-gradient(circle, #ffcc00 0%, #ff6600 70%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 25px 12px rgba(255, 204, 0, 0.7);
+            transition: opacity 0.5s ease;
+            animation: flicker 0.5s ease-in-out infinite alternate;
+            z-index: 2;
+        }
+        
+        /* Smoke effect */
+        .smoke {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: rgba(200, 200, 200, 0.5);
+            border-radius: 50%;
+            z-index: 3;
+            animation: smoke-puff 5s forwards;
+        }
+
+        @keyframes smoke-puff {
+            0% {
+                transform: translateX(-50%) scale(1) translateY(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+            100% {
+                transform: translateX(-50%) scale(2.5) translateY(-80px);
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+        
+        /* Keyframe animation for flame flickering effect */
+        @keyframes flicker {
+            0% {
+                transform: translateX(-50%) scaleY(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(-50%) scaleY(0.95);
+                opacity: 0.9;
+                box-shadow: 0 0 20px 10px rgba(255, 204, 0, 0.6);
+            }
+            100% {
+                transform: translateX(-50%) scaleY(1.05);
+                opacity: 1;
+                box-shadow: 0 0 30px 15px rgba(255, 204, 0, 0.8);
+            }
+        }
+
+        /* Class to hide the flame when blown out */
+        .flame.hidden {
+            opacity: 0;
+            animation: none; /* Stop the flickering when hidden */
+        }
+
+        /* Keyframe animation for floating effect */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0);
+            }
+            50% {
+                transform: translateY(-20px) rotate(3deg);
+            }
+        }
+
+        /* Video Modal */
+        .video-modal {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0s 0.5s;
+        }
+
+        .video-modal.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease;
+        }
+
+        .vertical-video-container {
+            max-width: 300px;
+            max-height: 90vh; /* Ensure it fits on smaller screens */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center h-screen relative p-4">
+
+    <!-- Animated Background -->
+    <div class="animated-background"></div>
+    <div id="confetti-container" class="confetti-container"></div>
+    <audio id="birthday-music" src="https://www.learninggamesforkids.com/sound-mp3s/childrens-songs/happy-birthday.mp3" preload="auto"></audio>
+
+    <!-- Main Content -->
+    <div class="relative z-10 w-full h-full flex flex-col justify-between items-center text-center">
+        <!-- Message -->
+        <div class="w-full">
+            <h1 id="message" class="text-3xl sm:text-4xl md:text-5xl font-bold mt-8 mb-4 drop-shadow-md transition-all duration-500">
+                Tap the candles to make a wish!
+            </h1>
+            <p id="sub-message" class="text-xl sm:text-2xl font-medium drop-shadow-md">
+                2 candles to go...
+            </p>
+        </div>
+
+        <!-- Candle Container -->
+        <div id="candle-container" class="relative w-full h-full max-w-4xl mx-auto my-8 flex items-center justify-center">
+            <!-- Candle 3 -->
+            <div id="candle-3" class="candle" data-lit="true">
+                <div class="flame"></div>
+                <div class="wicker"></div>
+                <img class="candle-image" src="c1.png" alt="Candle shape 3">
+            </div>
+            
+            <!-- Candle 4 -->
+            <div id="candle-4" class="candle" data-lit="true">
+                <div class="flame"></div>
+                <div class="wicker"></div>
+                <img class="candle-image" src="c2.png" alt="Candle shape 4">
+            </div>
+        </div>
+
+        <!-- Invisible Video Modal -->
+        <div id="video-modal" class="video-modal fixed inset-0 flex items-center justify-center p-4 z-50">
+            <div class="relative vertical-video-container rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-500">
+                <video id="celebration-video" src="video.mp4" class="w-full h-auto" controls autoplay></video>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const numCandles = 2;
+            let blownOutCount = 0;
+            const messageElement = document.getElementById('message');
+            const subMessageElement = document.getElementById('sub-message');
+            const videoModal = document.getElementById('video-modal');
+            const celebrationVideo = document.getElementById('celebration-video');
+            const birthdayMusic = document.getElementById('birthday-music');
+            const confettiContainer = document.getElementById('confetti-container');
+
+            // Set the video URL here. This is a placeholder.
+            // Replace with your own YouTube, Vimeo, or other video URL.
+            const videoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&mute=1"; // Happy Birthday song
+            
+            // Get the candles by their IDs
+            const candle3 = document.getElementById('candle-3');
+            const candle4 = document.getElementById('candle-4');
+            const allCandles = [candle3, candle4];
+
+            // Update initial count
+            subMessageElement.textContent = `${numCandles} candles to go...`;
+
+            // Function to create confetti
+            const createConfetti = () => {
+                const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+                const confettiTypes = ['square', 'ribbon', 'star'];
+                const randomType = confettiTypes[Math.floor(Math.random() * confettiTypes.length)];
+
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti', randomType);
+                confetti.style.left = `${Math.random() * 100}vw`;
+                
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                if (randomType === 'star') {
+                    confetti.textContent = '★';
+                    confetti.style.color = randomColor;
+                } else {
+                    confetti.style.backgroundColor = randomColor;
+                }
+                
+                confetti.style.animationDelay = `${Math.random() * 2}s`;
+                confettiContainer.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            };
+
+            // Start playing birthday music
+            birthdayMusic.volume = 0.5;
+            birthdayMusic.play();
+
+            // Add event listeners to each candle
+            allCandles.forEach(candle => {
+                candle.addEventListener('click', () => {
+                    const isLit = candle.dataset.lit === 'true';
+
+                    // Only blow out the candle if it's currently lit
+                    if (isLit) {
+                        const flame = candle.querySelector('.flame');
+                        const wicker = candle.querySelector('.wicker');
+
+                        if (flame) {
+                            flame.classList.add('hidden');
+                        }
+                        if (wicker) {
+                            // Create and add the smoke element
+                            const smoke = document.createElement('div');
+                            smoke.classList.add('smoke');
+                            wicker.appendChild(smoke);
+                            
+                            // Remove the smoke element after the animation completes
+                            setTimeout(() => {
+                                smoke.remove();
+                            }, 5000);
+                        }
+                        
+                        candle.dataset.lit = 'false';
+                        blownOutCount++;
+                        
+                        // Update the message
+                        const candlesLeft = numCandles - blownOutCount;
+                        if (candlesLeft > 0) {
+                            subMessageElement.textContent = `${candlesLeft} candles to go...`;
+                        } else {
+                            subMessageElement.textContent = "You've blown them all out!";
+                            
+                            // A brief delay to let the last candle animation finish
+                            setTimeout(() => {
+                                // Update final message and reveal video
+                                messageElement.textContent = "Happy Birthday!";
+                                subMessageElement.textContent = "Your wish is granted!";
+                                
+                                videoModal.classList.add('active');
+                                celebrationVideo.play();
+                            }, 1000);
+                        }
+                    }
+                });
+            });
+
+            // Prevent clicks on the modal from closing it
+            videoModal.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Continuously generate confetti
+            setInterval(createConfetti, 100);
+        });
+    </script>
+</body>
+</html>
